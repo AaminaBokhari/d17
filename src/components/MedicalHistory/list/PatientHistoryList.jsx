@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import HistoryCard from './HistoryCard';
-import LoadingSpinner from '../common/LoadingSpinner';
+import LoadingSpinner from '../../common/LoadingSpinner';
 
 function PatientHistoryList({ history, isLoading, error }) {
   if (isLoading) {
