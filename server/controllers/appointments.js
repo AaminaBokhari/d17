@@ -2,21 +2,36 @@ import asyncHandler from '../utils/asyncHandler.js';
 import * as appointmentService from '../services/appointmentService.js';
 import AppError from '../utils/AppError.js';
 
+// In your appointments controller, add more logging
 export const createAppointment = asyncHandler(async (req, res) => {
+  // Add more robust patient and doctor ID handling
   const appointment = await appointmentService.createAppointmentService({
-    ...req.body,
-    doctor: req.user.role === 'doctor' ? req.user.id : req.body.doctor
+    patient: req.body.patient, // Explicitly use patient from request
+    doctor: req.user.role === 'doctor' ? req.user.id : req.body.doctor,
+    dateTime: req.body.dateTime,
+    type: req.body.type,
+    status: req.body.status,
+    notes: req.body.notes
   });
+
+  // Add more detailed error handling
+  if (!appointment) {
+    throw new AppError('Failed to create appointment', 400);
+  }
 
   await appointment.populate(['patient', 'doctor']);
   res.status(201).json(appointment);
 });
 
+
+
 export const getAppointments = asyncHandler(async (req, res) => {
+  // More flexible query handling
   const query = req.user.role === 'doctor' 
     ? { doctor: req.user.id }
     : { patient: req.user.id };
 
+  console.log('Appointment Query:', query);
   const appointments = await appointmentService.getAppointmentsService(query);
   res.json(appointments);
 });
