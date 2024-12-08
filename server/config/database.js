@@ -3,19 +3,16 @@ import { logger } from '../utils/logger.js';
 
 const connectDB = async () => {
   try {
-    // Add connection options to handle deprecation warnings and improve reliability
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       dbName: 'doctor_panel',
-      connectTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 45000, // 45 seconds
-      // Add recommended options
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
       serverSelectionTimeoutMS: 5000,
       heartbeatFrequencyMS: 1000,
       retryWrites: true,
       w: 'majority'
     });
     
-    // Add connection event handlers
     mongoose.connection.on('connected', () => {
       logger.info(`MongoDB Connected: ${conn.connection.host}`);
     });
