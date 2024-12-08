@@ -8,36 +8,28 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import AppointmentActions from './AppointmentActions';
-import { FaSort, FaUser } from 'react-icons/fa';
-import { format, parseISO } from 'date-fns';
+import { FaSort } from 'react-icons/fa';
 
-function AppointmentTable({ data = [], filters }) {
+function AppointmentTable({ data, filters }) {
   const columnHelper = createColumnHelper();
 
   const columns = [
-    columnHelper.accessor(row => {
-      try {
-        return format(parseISO(row.dateTime), 'HH:mm');
-      } catch (e) {
-        return 'Invalid Time';
-      }
-    }, {
-      id: 'time',
+    columnHelper.accessor('time', {
       header: 'Time',
       cell: info => <span className="font-medium">{info.getValue()}</span>,
     }),
-    columnHelper.accessor('patient.name', {
+    columnHelper.accessor('patientName', {
       header: 'Patient Name',
       cell: info => (
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-            <FaUser className="h-4 w-4" />
+          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+            {info.getValue().charAt(0)}
           </div>
           <span className="font-medium">{info.getValue()}</span>
         </div>
       ),
     }),
-    columnHelper.accessor('type', {
+    columnHelper.accessor('appointmentType', {
       header: 'Type',
       cell: info => (
         <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
@@ -47,26 +39,13 @@ function AppointmentTable({ data = [], filters }) {
     }),
     columnHelper.accessor('status', {
       header: 'Status',
-      cell: info => {
-        const status = info.getValue();
-        const statusStyles = {
-          Scheduled: 'bg-yellow-100 text-yellow-800',
-          'In Progress': 'bg-green-100 text-green-800',
-          Completed: 'bg-blue-100 text-blue-800',
-          Cancelled: 'bg-red-100 text-red-800'
-        };
-        return (
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusStyles[status] || 'bg-gray-100 text-gray-800'}`}>
-            {status}
-          </span>
-        );
-      },
-    }),
-    columnHelper.accessor('notes', {
-      header: 'Notes',
       cell: info => (
-        <span className="text-sm text-gray-600 truncate max-w-xs block">
-          {info.getValue() || '-'}
+        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+          info.getValue() === 'Waiting' ? 'bg-yellow-100 text-yellow-800' :
+          info.getValue() === 'In Progress' ? 'bg-green-100 text-green-800' :
+          'bg-gray-100 text-gray-800'
+        }`}>
+          {info.getValue()}
         </span>
       ),
     }),
@@ -76,7 +55,8 @@ function AppointmentTable({ data = [], filters }) {
       cell: (info) => (
         <AppointmentActions
           appointment={info.row.original}
-          onUpdate={(apt) => console.log('Update:', apt)}
+          onReschedule={(apt) => console.log('Reschedule:', apt)}
+          onCancel={(apt) => console.log('Cancel:', apt)}
         />
       ),
     }),
@@ -86,15 +66,15 @@ function AppointmentTable({ data = [], filters }) {
     data,
     columns,
     state: {
-      globalFilter: filters?.search,
+      globalFilter: filters.search,
       columnFilters: [
         {
           id: 'status',
-          value: filters?.status,
+          value: filters.status,
         },
         {
-          id: 'type',
-          value: filters?.type,
+          id: 'appointmentType',
+          value: filters.type,
         },
       ],
     },
@@ -102,14 +82,6 @@ function AppointmentTable({ data = [], filters }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  if (!data.length) {
-    return (
-      <div className="p-8 text-center">
-        <p className="text-gray-500">No appointments found</p>
-      </div>
-    );
-  }
 
   return (
     <div className="overflow-x-auto">

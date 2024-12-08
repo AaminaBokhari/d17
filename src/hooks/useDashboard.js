@@ -1,26 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
-import { dashboardService } from '../services/dashboardService';
+import { dashboard } from '../services/api';
 
-export const useDashboardStats = () => {
+export function useDashboardStats() {
   return useQuery({
     queryKey: ['dashboardStats'],
-    queryFn: dashboardService.getStats,
-    staleTime: 30000 // Cache for 30 seconds
+    queryFn: () => dashboard.getStats()
   });
-};
+}
 
-export const usePatientStats = () => {
+export function usePatientStats() {
   return useQuery({
     queryKey: ['patientStats'],
-    queryFn: dashboardService.getPatientStats,
-    staleTime: 30000
+    queryFn: () => dashboard.getPatientStats()
   });
-};
+}
 
-export const useRecentActivities = (limit = 5) => {
+export function useRecentActivities(limit) {
   return useQuery({
     queryKey: ['recentActivities', limit],
-    queryFn: () => dashboardService.getRecentActivities(limit),
-    staleTime: 30000
+    queryFn: () => dashboard.getActivities(limit)
   });
-};
+}

@@ -11,7 +11,7 @@ function AppointmentOverview() {
     status: '',
   });
 
-  const { data: appointments, isLoading, error } = useAppointments();
+  const { appointments, isLoading, error } = useAppointments();
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({

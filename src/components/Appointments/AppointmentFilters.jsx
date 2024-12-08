@@ -2,8 +2,8 @@ import React from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 function AppointmentFilters({ filters, onFilterChange }) {
-  const appointmentTypes = ['Consultation', 'Check-up', 'Follow-up'];
-  const statusTypes = ['Scheduled', 'In Progress', 'Completed', 'Cancelled'];
+  const appointmentTypes = ['Check-up', 'Follow-up', 'Consultation'];
+  const statusTypes = ['Waiting', 'In Progress', 'Scheduled'];
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md space-y-4">

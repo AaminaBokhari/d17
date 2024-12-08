@@ -1,53 +1,58 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import appointmentService from '../services/appointmentService';
+import { appointments } from '../services/api';
 import { toast } from 'react-toastify';
 
-export const useAppointments = () => {
+export function useAppointments() {
   const queryClient = useQueryClient();
 
-  const query = useQuery({
+  const {
+    data: appointmentList,
+    isLoading,
+    error
+  } = useQuery({
     queryKey: ['appointments'],
-    queryFn: () => appointmentService.getAll(),
-    staleTime: 30000,
+    queryFn: appointments.getAll
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => appointmentService.create(data),
+    mutationFn: appointments.create,
     onSuccess: () => {
       queryClient.invalidateQueries(['appointments']);
       toast.success('Appointment created successfully');
-    },
+    }
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => appointmentService.update(id, data),
+    mutationFn: ({ id, data }) => appointments.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['appointments']);
       toast.success('Appointment updated successfully');
-    },
+    }
   });
 
   const cancelMutation = useMutation({
-    mutationFn: ({ id, reason }) => appointmentService.cancel(id, reason),
+    mutationFn: ({ id, reason }) => appointments.cancel(id, reason),
     onSuccess: () => {
       queryClient.invalidateQueries(['appointments']);
       toast.success('Appointment cancelled successfully');
-    },
+    }
   });
 
   const rescheduleMutation = useMutation({
-    mutationFn: ({ id, dateTime }) => appointmentService.reschedule(id, dateTime),
+    mutationFn: ({ id, dateTime }) => appointments.reschedule(id, dateTime),
     onSuccess: () => {
       queryClient.invalidateQueries(['appointments']);
       toast.success('Appointment rescheduled successfully');
-    },
+    }
   });
 
   return {
-    ...query,
+    appointments: appointmentList?.data || [],
+    isLoading,
+    error,
     createAppointment: createMutation.mutate,
     updateAppointment: updateMutation.mutate,
     cancelAppointment: cancelMutation.mutate,
-    rescheduleAppointment: rescheduleMutation.mutate,
+    rescheduleAppointment: rescheduleMutation.mutate
   };
-};
+}

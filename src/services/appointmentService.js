@@ -1,52 +1,33 @@
 import api from './api';
 
-class AppointmentService {
-  async getAll() {
-    try {
-      const response = await api.get('/appointments');
-      return this.transformAppointments(response.data);
-    } catch (error) {
-      throw error;
-    }
-  }
+export const getAppointments = async () => {
+  const response = await api.get('/appointments');
+  return response.data;
+};
 
-  async create(appointmentData) {
-    const response = await api.post('/appointments', appointmentData);
-    return response.data;
-  }
+export const createAppointment = async (appointmentData) => {
+  const response = await api.post('/appointments', appointmentData);
+  return response.data;
+};
 
-  async update(id, updateData) {
-    const response = await api.patch(`/appointments/${id}`, updateData);
-    return response.data;
-  }
+export const updateAppointment = async (id, updateData) => {
+  const response = await api.patch(`/appointments/${id}`, updateData);
+  return response.data;
+};
 
-  async cancel(id, reason) {
-    const response = await api.patch(`/appointments/${id}/cancel`, { reason });
-    return response.data;
-  }
+export const cancelAppointment = async (id, reason) => {
+  const response = await api.patch(`/appointments/${id}/cancel`, { reason });
+  return response.data;
+};
 
-  async reschedule(id, dateTime) {
-    const response = await api.patch(`/appointments/${id}/reschedule`, { dateTime });
-    return response.data;
-  }
+export const rescheduleAppointment = async (id, newDateTime) => {
+  const response = await api.patch(`/appointments/${id}/reschedule`, { dateTime: newDateTime });
+  return response.data;
+};
 
-  transformAppointments(appointments) {
-    return appointments.map(appointment => ({
-      id: appointment._id,
-      dateTime: appointment.dateTime,
-      type: appointment.type,
-      status: appointment.status,
-      notes: appointment.notes,
-      patient: {
-        id: appointment.patient,
-        name: appointment.patientName || 'Unknown Patient',
-      },
-      doctor: appointment.doctor,
-    }));
-  }
-}
-
-const service = new AppointmentService();
-export const rescheduleAppointment = service.reschedule.bind(service);
-export const cancelAppointment = service.cancel.bind(service);
-export default se
+export const getDoctorSchedule = async (startDate, endDate) => {
+  const response = await api.get('/appointments/schedule', {
+    params: { startDate, endDate }
+  });
+  return response.data;
+};

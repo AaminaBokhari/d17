@@ -15,6 +15,7 @@ function AppointmentActions({ appointment, onUpdate }) {
       toast.success('Appointment rescheduled successfully');
     } catch (error) {
       toast.error('Failed to reschedule appointment');
+      throw error;
     }
   };
 
@@ -25,6 +26,7 @@ function AppointmentActions({ appointment, onUpdate }) {
       toast.success('Appointment cancelled successfully');
     } catch (error) {
       toast.error('Failed to cancel appointment');
+      throw error;
     }
   };
 
